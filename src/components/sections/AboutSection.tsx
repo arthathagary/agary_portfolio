@@ -23,9 +23,9 @@ export function AboutSection({ onSelectSection }: AboutSectionProps) {
           <p className="font-mono text-xs uppercase tracking-wider text-workspace-accent">
             About &amp; Background
           </p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight text-workspace-text">
+          <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-workspace-text">
             Engineering Philosophy &amp; Academic Foundation
-          </h1>
+          </h2>
         </div>
         <button
           type="button"

@@ -12,9 +12,9 @@ export function SkillsSection() {
         <p className="font-mono text-xs uppercase tracking-wider text-workspace-accent">
           Technical Capabilities
         </p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-workspace-text">
+        <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-workspace-text">
           Production Stack &amp; Engineering Tooling
-        </h1>
+        </h2>
         <p className="mt-1 text-xs sm:text-sm text-workspace-muted">
           Every technology listed below is backed by verified commercial SaaS or open-source experience on my résumé—grouped by domain with real usage context instead of arbitrary percentages.
         </p>

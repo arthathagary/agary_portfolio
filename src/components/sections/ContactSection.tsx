@@ -89,9 +89,9 @@ export function ContactSection() {
         <p className="font-mono text-xs uppercase tracking-wider text-workspace-accent">
           Direct Channels
         </p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-workspace-text">
+        <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-workspace-text">
           Contact &amp; Verified Profiles
-        </h1>
+        </h2>
         <p className="mt-1 text-xs sm:text-sm text-workspace-muted">
           Reach out directly via email, phone, or LinkedIn regarding Full-Stack, Backend, or JavaScript/TypeScript Software Engineering opportunities.
         </p>

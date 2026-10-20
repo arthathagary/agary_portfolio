@@ -17,9 +17,9 @@ export function ExperienceSection() {
         <p className="font-mono text-xs uppercase tracking-wider text-workspace-accent">
           Career Timeline
         </p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-workspace-text">
+        <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-workspace-text">
           Professional Software Engineering Experience
-        </h1>
+        </h2>
         <p className="mt-1 text-xs sm:text-sm text-workspace-muted">
           2+ years of hands-on full-stack product engineering across the MEAN and MERN stacks.
         </p>

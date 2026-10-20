@@ -45,9 +45,9 @@ export function ResumeSection() {
           <p className="font-mono text-xs uppercase tracking-wider text-workspace-accent">
             Curriculum Vitae
           </p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight text-workspace-text">
+          <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-workspace-text">
             Résumé — {PROFILE_DATA.fullName}
-          </h1>
+          </h2>
           <p className="mt-1 text-xs sm:text-sm text-workspace-muted">
             View my complete structured résumé below or download the original PDF file (`{PROFILE_DATA.resumeDownloadFilename}`).
           </p>

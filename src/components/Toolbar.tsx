@@ -42,7 +42,7 @@ export function Toolbar({
     NAVIGATION_ITEMS[0];
 
   return (
-    <header className="flex h-12 shrink-0 items-center justify-between border-b border-workspace-border bg-workspace-surface/95 px-3.5 backdrop-blur-sm sm:px-5">
+    <header className="flex h-11 shrink-0 items-center justify-between border-b border-workspace-border bg-workspace-surface/95 px-3.5 backdrop-blur-sm sm:px-4">
       {/* Left: Subtle macOS-inspired window dots + workspace path */}
       <div className="flex items-center gap-3.5 min-w-0">
         <div

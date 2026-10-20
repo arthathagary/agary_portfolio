@@ -24,6 +24,16 @@ const VALID_SECTIONS = new Set<SectionId>(
   NAVIGATION_ITEMS.map((item) => item.id)
 );
 
+const SECTION_ORDER: SectionId[] = [
+  "home",
+  "projects",
+  "experience",
+  "skills",
+  "about",
+  "resume",
+  "contact",
+];
+
 export function WorkspaceShell() {
   const [activeSection, setActiveSection] = useState<SectionId>("home");
   const [activeProject, setActiveProject] = useState<ProjectCaseStudy | null>(
@@ -33,6 +43,7 @@ export function WorkspaceShell() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const mainPanelRef = useRef<HTMLElement>(null);
+  const isProgrammaticScroll = useRef(false);
 
   // Sync theme with document root
   useEffect(() => {
@@ -54,25 +65,82 @@ export function WorkspaceShell() {
     });
   }, []);
 
-  // Sync section state with URL hash for deep linking & back/forward navigation
-  useEffect(() => {
-    const syncFromHash = () => {
-      const rawHash = window.location.hash.replace("#", "").toLowerCase();
-      if (VALID_SECTIONS.has(rawHash as SectionId)) {
-        setActiveSection(rawHash as SectionId);
-      }
-    };
-    syncFromHash();
-    window.addEventListener("hashchange", syncFromHash);
-    return () => window.removeEventListener("hashchange", syncFromHash);
-  }, []);
-
-  const handleSelectSection = useCallback((section: SectionId) => {
+  const scrollToSection = useCallback((section: SectionId, smooth = true) => {
     setActiveSection(section);
     if (typeof window !== "undefined") {
       window.history.replaceState(null, "", `#${section}`);
     }
-    mainPanelRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+
+    const container = mainPanelRef.current;
+    if (!container) return;
+
+    if (section === "home") {
+      isProgrammaticScroll.current = true;
+      container.scrollTo({ top: 0, behavior: smooth ? "smooth" : "auto" });
+      setTimeout(() => {
+        isProgrammaticScroll.current = false;
+      }, 450);
+      return;
+    }
+
+    const targetEl = container.querySelector<HTMLElement>(
+      `#section-${section}`
+    );
+    if (targetEl) {
+      isProgrammaticScroll.current = true;
+      const containerTop = container.getBoundingClientRect().top;
+      const targetTop = targetEl.getBoundingClientRect().top;
+      const offset = targetTop - containerTop + container.scrollTop - 16;
+      container.scrollTo({
+        top: Math.max(0, offset),
+        behavior: smooth ? "smooth" : "auto",
+      });
+      setTimeout(() => {
+        isProgrammaticScroll.current = false;
+      }, 450);
+    }
+  }, []);
+
+  // Sync initial hash on load
+  useEffect(() => {
+    const rawHash = window.location.hash.replace("#", "").toLowerCase();
+    if (VALID_SECTIONS.has(rawHash as SectionId)) {
+      scrollToSection(rawHash as SectionId, false);
+    }
+  }, [scrollToSection]);
+
+  // Update active section indicator in Sidebar & Toolbar as user scrolls inside the desktop app panel
+  useEffect(() => {
+    const container = mainPanelRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      if (isProgrammaticScroll.current) return;
+
+      const scrollTop = container.scrollTop;
+      if (scrollTop < 120) {
+        setActiveSection("home");
+        return;
+      }
+
+      const containerRect = container.getBoundingClientRect();
+      const triggerLine = containerRect.top + containerRect.height * 0.28;
+
+      let current: SectionId = "home";
+      for (const id of SECTION_ORDER) {
+        const el = container.querySelector<HTMLElement>(`#section-${id}`);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= triggerLine) {
+            current = id;
+          }
+        }
+      }
+      setActiveSection(current);
+    };
+
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    return () => container.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleSelectProjectById = useCallback((projectId: string) => {
@@ -82,7 +150,7 @@ export function WorkspaceShell() {
     }
   }, []);
 
-  // Global keyboard shortcuts (Cmd/Ctrl + K, and number shortcuts 1-7 when not focused in an input)
+  // Global keyboard shortcuts (Cmd/Ctrl + K, and Alt + 1..7)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -109,20 +177,20 @@ export function WorkspaceShell() {
         const navItem = NAVIGATION_ITEMS.find((item) => item.shortcut === e.key);
         if (navItem) {
           e.preventDefault();
-          handleSelectSection(navItem.id);
+          scrollToSection(navItem.id);
         }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeProject, commandPaletteOpen, handleSelectSection]);
+  }, [activeProject, commandPaletteOpen, scrollToSection]);
 
   return (
-    <div className="min-h-screen w-full bg-workspace-bg text-workspace-text flex flex-col justify-center lg:p-4 xl:p-6">
-      {/* Centered Desktop-Inspired Application Frame */}
-      <div className="mx-auto flex w-full max-w-[1380px] flex-1 lg:h-[calc(100vh-2rem)] xl:h-[calc(100vh-3rem)] lg:max-h-[960px] flex-col overflow-hidden lg:rounded-2xl border-workspace-border lg:border bg-workspace-surface/40 shadow-window">
-        {/* Top Window Toolbar */}
+    <div className="h-dvh max-h-dvh w-full overflow-hidden bg-workspace-bg text-workspace-text flex flex-col lg:p-3 xl:p-4">
+      {/* Centered Desktop-Inspired Application Frame — Fits 100% inside viewport with zero outer page scroll */}
+      <div className="mx-auto flex w-full max-w-[1440px] flex-1 min-h-0 flex-col overflow-hidden lg:rounded-xl border-workspace-border lg:border bg-workspace-surface/40 shadow-window">
+        {/* Top Window Toolbar (Fixed at top of app frame) */}
         <Toolbar
           activeSection={activeSection}
           activeProjectName={activeProject?.name ?? null}
@@ -131,14 +199,14 @@ export function WorkspaceShell() {
           onToggleTheme={handleToggleTheme}
           mobileMenuOpen={mobileMenuOpen}
           onToggleMobileMenu={() => setMobileMenuOpen((prev) => !prev)}
-          onSelectSection={handleSelectSection}
+          onSelectSection={scrollToSection}
         />
 
-        {/* Workspace Body: Left Sidebar + Main Content Area */}
-        <div className="flex flex-1 flex-col lg:flex-row overflow-hidden">
+        {/* Workspace Body: Fixed Left Sidebar + Scrollable Main Content Viewport */}
+        <div className="flex flex-1 min-h-0 flex-col lg:flex-row overflow-hidden">
           <Sidebar
             activeSection={activeSection}
-            onSelectSection={handleSelectSection}
+            onSelectSection={scrollToSection}
             mobileMenuOpen={mobileMenuOpen}
             onCloseMobileMenu={() => setMobileMenuOpen(false)}
           />
@@ -147,33 +215,44 @@ export function WorkspaceShell() {
             ref={mainPanelRef}
             id="main-workspace-content"
             tabIndex={-1}
-            className="flex-1 overflow-y-auto bg-workspace-bg/50 p-4 sm:p-6 lg:p-8 workspace-scroll focus:outline-none"
+            className="flex-1 min-h-0 overflow-y-auto bg-workspace-bg/50 p-3.5 sm:p-5 lg:p-6 workspace-scroll focus:outline-none"
           >
-            <div className="mx-auto max-w-5xl">
-              {activeSection === "home" && (
-                <HomeSection
-                  onSelectSection={handleSelectSection}
-                  onOpenCaseStudy={(project) => setActiveProject(project)}
-                />
-              )}
-              {activeSection === "about" && (
-                <AboutSection onSelectSection={handleSelectSection} />
-              )}
-              {activeSection === "projects" && (
+            <div className="mx-auto max-w-5xl space-y-10 pb-12">
+              <div id="section-home" className="scroll-mt-4">
+                <HomeSection onSelectSection={scrollToSection} />
+              </div>
+
+              <div id="section-projects" className="scroll-mt-4">
                 <ProjectsSection
                   onOpenCaseStudy={(project) => setActiveProject(project)}
                 />
-              )}
-              {activeSection === "experience" && <ExperienceSection />}
-              {activeSection === "skills" && <SkillsSection />}
-              {activeSection === "resume" && <ResumeSection />}
-              {activeSection === "contact" && <ContactSection />}
+              </div>
+
+              <div id="section-experience" className="scroll-mt-4">
+                <ExperienceSection />
+              </div>
+
+              <div id="section-skills" className="scroll-mt-4">
+                <SkillsSection />
+              </div>
+
+              <div id="section-about" className="scroll-mt-4">
+                <AboutSection onSelectSection={scrollToSection} />
+              </div>
+
+              <div id="section-resume" className="scroll-mt-4">
+                <ResumeSection />
+              </div>
+
+              <div id="section-contact" className="scroll-mt-4">
+                <ContactSection />
+              </div>
             </div>
           </main>
         </div>
 
-        {/* Restrained Application Status Bar */}
-        <footer className="hidden sm:flex h-8 shrink-0 items-center justify-between border-t border-workspace-border bg-workspace-surface px-4 font-mono text-[11px] text-workspace-muted">
+        {/* Restrained Application Status Bar — Always visible at bottom of viewport */}
+        <footer className="hidden sm:flex h-7 shrink-0 items-center justify-between border-t border-workspace-border bg-workspace-surface px-4 font-mono text-[11px] text-workspace-muted">
           <div className="flex items-center gap-3">
             <span className="inline-flex items-center gap-1.5 text-workspace-accent">
               <span className="h-1.5 w-1.5 rounded-full bg-workspace-accent" />
@@ -184,6 +263,10 @@ export function WorkspaceShell() {
           </div>
 
           <div className="flex items-center gap-4">
+            <span className="text-workspace-subtle hidden md:inline">
+              Scroll workspace panel for full portfolio
+            </span>
+            <span className="text-workspace-subtle hidden md:inline">·</span>
             <button
               type="button"
               onClick={() => setCommandPaletteOpen(true)}
@@ -212,7 +295,7 @@ export function WorkspaceShell() {
       <CommandPalette
         isOpen={commandPaletteOpen}
         onClose={() => setCommandPaletteOpen(false)}
-        onSelectSection={handleSelectSection}
+        onSelectSection={scrollToSection}
         onSelectProject={handleSelectProjectById}
         theme={theme}
         onToggleTheme={handleToggleTheme}

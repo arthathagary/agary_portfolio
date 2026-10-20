@@ -49,20 +49,20 @@ export function Sidebar({
 
   return (
     <>
-      {/* Desktop Left Sidebar */}
+      {/* Desktop Left Sidebar — Fits within fixed viewport height */}
       <aside
         aria-label="Primary Portfolio Navigation"
-        className="hidden lg:flex w-60 shrink-0 flex-col justify-between border-r border-workspace-border bg-workspace-surface/75 select-none"
+        className="hidden lg:flex w-56 xl:w-60 shrink-0 min-h-0 flex-col justify-between border-r border-workspace-border bg-workspace-surface/75 select-none overflow-y-auto workspace-scroll"
       >
-        <div className="p-3.5 space-y-5">
+        <div className="p-3 space-y-3.5">
           {/* Compact Engineer Identity Card */}
-          <div className="rounded-lg border border-workspace-border-subtle bg-workspace-elevated/60 p-3">
+          <div className="rounded-lg border border-workspace-border-subtle bg-workspace-elevated/60 p-2.5">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-workspace-accent-border bg-workspace-accent-dim font-mono text-xs font-semibold text-workspace-accent">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-workspace-accent-border bg-workspace-accent-dim font-mono text-xs font-semibold text-workspace-accent">
                 AA
               </div>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-workspace-text">
+                <p className="truncate text-xs font-semibold text-workspace-text">
                   {PROFILE_DATA.fullName}
                 </p>
                 <p className="truncate text-[11px] text-workspace-muted">
@@ -70,15 +70,15 @@ export function Sidebar({
                 </p>
               </div>
             </div>
-            <div className="mt-2.5 flex items-center justify-between border-t border-workspace-border-subtle pt-2 text-[11px] font-mono text-workspace-muted">
+            <div className="mt-2 flex items-center justify-between border-t border-workspace-border-subtle pt-1.5 text-[10px] font-mono text-workspace-muted">
               <span>MEAN / MERN</span>
               <span className="text-workspace-accent">2+ Yrs Exp</span>
             </div>
           </div>
 
           {/* Navigation List */}
-          <nav aria-label="Workspace Sections" className="space-y-1">
-            <p className="px-2.5 pb-1 text-[10px] font-mono uppercase tracking-wider text-workspace-subtle">
+          <nav aria-label="Workspace Sections" className="space-y-0.5">
+            <p className="px-2 pb-1 text-[10px] font-mono uppercase tracking-wider text-workspace-subtle">
               Workspace
             </p>
             {NAVIGATION_ITEMS.map((item) => {
@@ -90,7 +90,7 @@ export function Sidebar({
                   type="button"
                   onClick={() => handleSelect(item.id)}
                   aria-current={isActive ? "page" : undefined}
-                  className={`group relative flex w-full items-center justify-between rounded-md px-2.5 py-2 text-left text-[13px] font-medium transition-all ${
+                  className={`group relative flex w-full items-center justify-between rounded-md px-2.5 py-1.5 text-left text-xs font-medium transition-all ${
                     isActive
                       ? "bg-workspace-accent-dim text-workspace-text"
                       : "text-workspace-muted hover:bg-workspace-hover/70 hover:text-workspace-text"
@@ -98,13 +98,13 @@ export function Sidebar({
                 >
                   {isActive && (
                     <span
-                      className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-workspace-accent"
+                      className="absolute left-0 top-1 bottom-1 w-[3px] rounded-r-full bg-workspace-accent"
                       aria-hidden="true"
                     />
                   )}
-                  <span className="flex items-center gap-2.5">
+                  <span className="flex items-center gap-2">
                     <Icon
-                      className={`h-4 w-4 transition-colors ${
+                      className={`h-3.5 w-3.5 transition-colors ${
                         isActive
                           ? "text-workspace-accent"
                           : "text-workspace-muted group-hover:text-workspace-text"
@@ -113,7 +113,7 @@ export function Sidebar({
                     <span>{item.label}</span>
                   </span>
                   <kbd
-                    className={`font-mono text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
+                    className={`font-mono text-[10px] px-1.5 py-0.2 rounded border transition-colors ${
                       isActive
                         ? "border-workspace-accent-border bg-workspace-surface text-workspace-accent"
                         : "border-transparent text-workspace-subtle group-hover:border-workspace-border"
@@ -129,16 +129,16 @@ export function Sidebar({
         </div>
 
         {/* Bottom Verified Profile Links */}
-        <div className="border-t border-workspace-border p-3.5 space-y-2.5">
+        <div className="border-t border-workspace-border p-3 space-y-1.5">
           <p className="px-1 text-[10px] font-mono uppercase tracking-wider text-workspace-subtle">
             Verified Profiles
           </p>
-          <div className="grid grid-cols-1 gap-1 text-xs">
+          <div className="grid grid-cols-1 gap-0.5 text-xs">
             <a
               href={PROFILE_DATA.contact.githubPersonalUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between rounded-md px-2 py-1.5 text-workspace-muted hover:bg-workspace-hover hover:text-workspace-text transition-colors"
+              className="flex items-center justify-between rounded-md px-2 py-1 text-workspace-muted hover:bg-workspace-hover hover:text-workspace-text transition-colors"
             >
               <span className="flex items-center gap-2 truncate">
                 <Github className="h-3.5 w-3.5 shrink-0 text-workspace-accent" />
@@ -150,7 +150,7 @@ export function Sidebar({
               href={PROFILE_DATA.contact.githubWorkUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between rounded-md px-2 py-1.5 text-workspace-muted hover:bg-workspace-hover hover:text-workspace-text transition-colors"
+              className="flex items-center justify-between rounded-md px-2 py-1 text-workspace-muted hover:bg-workspace-hover hover:text-workspace-text transition-colors"
             >
               <span className="flex items-center gap-2 truncate">
                 <Github className="h-3.5 w-3.5 shrink-0 text-workspace-muted" />
@@ -162,7 +162,7 @@ export function Sidebar({
               href={PROFILE_DATA.contact.linkedinUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between rounded-md px-2 py-1.5 text-workspace-muted hover:bg-workspace-hover hover:text-workspace-text transition-colors"
+              className="flex items-center justify-between rounded-md px-2 py-1 text-workspace-muted hover:bg-workspace-hover hover:text-workspace-text transition-colors"
             >
               <span className="flex items-center gap-2 truncate">
                 <Linkedin className="h-3.5 w-3.5 shrink-0 text-workspace-accent" />
@@ -177,7 +177,7 @@ export function Sidebar({
       {/* Mobile Compact Horizontal Navigation Pill Bar */}
       <nav
         aria-label="Mobile Section Navigation"
-        className="flex lg:hidden items-center gap-1 overflow-x-auto border-b border-workspace-border bg-workspace-surface px-3 py-2 no-scrollbar"
+        className="flex lg:hidden shrink-0 items-center gap-1 overflow-x-auto border-b border-workspace-border bg-workspace-surface px-3 py-1.5 no-scrollbar"
       >
         {NAVIGATION_ITEMS.map((item) => {
           const Icon = SECTION_ICONS[item.id];
@@ -188,7 +188,7 @@ export function Sidebar({
               type="button"
               onClick={() => handleSelect(item.id)}
               aria-current={isActive ? "page" : undefined}
-              className={`flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
+              className={`flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                 isActive
                   ? "bg-workspace-accent-dim text-workspace-accent border border-workspace-accent-border"
                   : "text-workspace-muted hover:bg-workspace-hover hover:text-workspace-text border border-transparent"
@@ -235,7 +235,7 @@ export function Sidebar({
                       key={item.id}
                       type="button"
                       onClick={() => handleSelect(item.id)}
-                      className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm font-medium transition-colors ${
+                      className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm font-medium transition-colors ${
                         isActive
                           ? "bg-workspace-accent-dim text-workspace-accent"
                           : "text-workspace-muted hover:bg-workspace-hover hover:text-workspace-text"
